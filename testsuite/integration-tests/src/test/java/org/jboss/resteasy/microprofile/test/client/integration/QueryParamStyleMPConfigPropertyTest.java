@@ -19,15 +19,20 @@
 
 package org.jboss.resteasy.microprofile.test.client.integration;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import jakarta.ws.rs.client.ClientRequestContext;
+import jakarta.ws.rs.client.ClientRequestFilter;
 
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.arquillian.test.api.ArquillianResource;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.microprofile.test.client.integration.resource.QueryParamStyleService;
 import org.jboss.resteasy.microprofile.test.client.integration.resource.QueryParamStyleServiceIntf;
 import org.jboss.resteasy.microprofile.test.util.TestEnvironment;
@@ -46,6 +51,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class QueryParamStyleMPConfigPropertyTest {
+
+    private static final Logger LOGGER = Logger.getLogger(QueryParamStyleMPConfigPropertyTest.class);
+
+    public static class UrlLoggingFilter implements ClientRequestFilter {
+        @Override
+        public void filter(ClientRequestContext requestContext) throws IOException {
+            LOGGER.info("REQUEST URL: " + requestContext.getUri());
+        }
+    }
 
     @Deployment
     public static Archive<?> serviceDeploy() {
@@ -74,27 +88,33 @@ public class QueryParamStyleMPConfigPropertyTest {
     public void commaSeparated() {
         String key = QueryParamStyleServiceIntf.class.getCanonicalName() + "/mp-rest/queryParamStyle";
         System.setProperty(key, "COMMA_sePARated");
+        try {
+            QueryParamStyleServiceIntf serviceIntf = builder
+                    .register(UrlLoggingFilter.class)
+                    .build(QueryParamStyleServiceIntf.class);
 
-        QueryParamStyleServiceIntf serviceIntf = builder
-                .build(QueryParamStyleServiceIntf.class);
-
-        List<String> l = serviceIntf.getList(argList);
-        Assertions.assertEquals(2, l.size());
-        Assertions.assertEquals("client call,hello,three", l.get(0));
-        System.clearProperty(key);
+            List<String> l = serviceIntf.getList(argList);
+            Assertions.assertEquals(2, l.size());
+            Assertions.assertEquals("client call,hello,three", l.get(0));
+        } finally {
+            System.clearProperty(key);
+        }
     }
 
     @Test
     public void arraPairs() {
         String key = "qParamS" + "/mp-rest/queryParamStyle";
         System.setProperty(key, "arraY_Pairs");
+        try {
+            QueryParamStyleServiceIntf serviceIntf = builder
+                    .register(UrlLoggingFilter.class)
+                    .build(QueryParamStyleServiceIntf.class);
 
-        QueryParamStyleServiceIntf serviceIntf = builder
-                .build(QueryParamStyleServiceIntf.class);
-
-        List<String> l = serviceIntf.getList(argList);
-        Assertions.assertEquals(1, l.size());
-        Assertions.assertEquals("theService reached", l.get(0));
-        System.clearProperty(key);
+            List<String> l = serviceIntf.getList(argList);
+            Assertions.assertEquals(1, l.size());
+            Assertions.assertEquals("theService reached", l.get(0));
+        } finally {
+            System.clearProperty(key);
+        }
     }
 }

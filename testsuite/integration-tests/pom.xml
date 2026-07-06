@@ -203,6 +203,7 @@
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
+                    <childDelegation>true</childDelegation>
                     <systemPropertyVariables>
                         <jboss.home>${jboss.home}</jboss.home>
                         <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>

@@ -19,9 +19,13 @@
 
 package org.jboss.resteasy.microprofile.test.client.integration;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import jakarta.ws.rs.client.ClientRequestContext;
+import jakarta.ws.rs.client.ClientRequestFilter;
 
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 import org.eclipse.microprofile.rest.client.ext.QueryParamStyle;
@@ -29,6 +33,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.arquillian.test.api.ArquillianResource;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.microprofile.test.client.integration.resource.QueryParamStyleService;
 import org.jboss.resteasy.microprofile.test.client.integration.resource.QueryParamStyleServiceIntf;
 import org.jboss.resteasy.microprofile.test.util.TestEnvironment;
@@ -47,6 +52,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith(ArquillianExtension.class)
 @RunAsClient
 public class QueryParamStyleTest {
+
+    private static final Logger LOGGER = Logger.getLogger(QueryParamStyleTest.class);
+
+    public static class UrlLoggingFilter implements ClientRequestFilter {
+        @Override
+        public void filter(ClientRequestContext requestContext) throws IOException {
+            LOGGER.info("REQUEST URL: " + requestContext.getUri());
+        }
+    }
 
     @Deployment
     public static Archive<?> serviceDeploy() {
@@ -78,6 +92,7 @@ public class QueryParamStyleTest {
     public void defaultSetting() {
 
         QueryParamStyleServiceIntf serviceIntf = builder
+                .register(UrlLoggingFilter.class)
                 .build(QueryParamStyleServiceIntf.class);
         List<String> l = serviceIntf.getList(argList);
 
@@ -123,6 +138,7 @@ public class QueryParamStyleTest {
 
         QueryParamStyleServiceIntf serviceIntf = builder
                 .queryParamStyle(QueryParamStyle.ARRAY_PAIRS)
+                .register(UrlLoggingFilter.class)
                 .build(QueryParamStyleServiceIntf.class);
 
         List<String> l = serviceIntf.getList(argList);
