@@ -106,8 +106,8 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.wildfly.plugins</groupId>
-                <artifactId>wildfly-maven-plugin</artifactId>
+                <groupId>${groupId.org.wildfly.maven.plugin.ci}</groupId>
+                <artifactId>${artifactId.org.wildfly.maven.plugin.ci}</artifactId>
                 <configuration>
                     <provisioning-dir>${jboss.home}</provisioning-dir>
                     <offline>${galleon.offline}</offline>
@@ -204,8 +204,8 @@
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.wildfly.plugins</groupId>
-                        <artifactId>wildfly-maven-plugin</artifactId>
+                        <groupId>${groupId.org.wildfly.maven.plugin.ci}</groupId>
+                        <artifactId>${artifactId.org.wildfly.maven.plugin.ci}</artifactId>
                         <executions>
                             <execution>
                                 <id>mp-server-provisioning</id>
@@ -247,8 +247,8 @@
                          wildfly-ee-galleon-pack, or it's other variants.
                      -->
                     <plugin>
-                        <groupId>org.wildfly.plugins</groupId>
-                        <artifactId>wildfly-maven-plugin</artifactId>
+                        <groupId>${groupId.org.wildfly.maven.plugin.ci}</groupId>
+                        <artifactId>${artifactId.org.wildfly.maven.plugin.ci}</artifactId>
                         <configuration>
                             <feature-packs>
                                 <feature-pack>

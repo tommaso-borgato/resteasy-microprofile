@@ -222,8 +222,9 @@
                 </dependencies>
             </plugin>
             <plugin>
-                <groupId>org.wildfly.plugins</groupId>
-                <artifactId>wildfly-maven-plugin</artifactId>
+                <groupId>${groupId.org.wildfly.maven.plugin}</groupId>
+                <artifactId>${artifactId.org.wildfly.maven.plugin}</artifactId>
+                <version>${version.org.wildfly.maven.plugin}</version>
                 <configuration>
                     <overwrite-provisioned-server>true</overwrite-provisioned-server>
                 </configuration>
